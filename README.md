@@ -10,12 +10,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/user/cookie-monster/actions/workflows/ci.yml">
-    <img src="https://github.com/user/cookie-monster/actions/workflows/ci.yml/badge.svg" alt="CI" />
+  <a href="https://github.com/bhayanak/cookie-monster/actions/workflows/ci.yml">
+    <img src="https://github.com/bhayanak/cookie-monster/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
-  <a href="https://codecov.io/gh/user/cookie-monster">
-    <img src="https://codecov.io/gh/user/cookie-monster/branch/main/graph/badge.svg" alt="Coverage" />
+  <a href="https://codecov.io/gh/bhayanak/cookie-monster">
+    <img src="https://codecov.io/gh/bhayanak/cookie-monster/branch/main/graph/badge.svg" alt="Codecov" />
   </a>
+  <img src="https://img.shields.io/badge/coverage-96%25-brightgreen" alt="Coverage 96%" />
   <img src="https://img.shields.io/badge/manifest-v3-green" alt="Manifest V3" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License MIT" />
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node >= 18" />
