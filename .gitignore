@@ -1,0 +1,42 @@
+# Logs & temp files
+*.log
+*.tmp
+*.bak
+*.swp
+*.md
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-chrome/
+dist-firefox/
+build/
+
+# Test coverage
+coverage/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Package manager
+pnpm-debug.log*
+
+# Extension packages (built artifacts)
+*.zip
+*.xpi
+*.crx
