@@ -40,6 +40,15 @@
 | **Quick Popup** | Glanceable summary with one-click export and clear-all |
 | **DevTools Panel** | Full-featured inspector integrated into Chrome/Firefox DevTools |
 
+## Screens
+<p align="center">
+  <img src="public/main.png" width="640" alt="Cookie Sentinel logo" />
+</p>
+<p align="center">
+  <img src="public/devtools.png" width="800" alt="Cookie Sentinel logo" />
+</p>
+
+
 ## Install
 
 ### From Source (Development)
