@@ -42,10 +42,10 @@
 
 ## Screens
 <p align="center">
-  <img src="public/main.png" width="640" alt="Cookie Sentinel logo" />
+  <img src="public/screens/main.png" width="640" alt="Cookie Sentinel logo" />
 </p>
 <p align="center">
-  <img src="public/devtools.png" width="800" alt="Cookie Sentinel logo" />
+  <img src="public/screens/devtools.png" width="800" alt="Cookie Sentinel logo" />
 </p>
 
 
@@ -73,9 +73,11 @@ Then load in Chrome:
 
 ### From Store
 
-- **Chrome Web Store**: _Coming soon_
-- **Firefox Add-ons**: _Coming soon_
-Note: Use github release for installing extensions/addons for now.
+- **Chrome Web Store** : _Coming soon_
+- **Firefox Add-ons**  : _Coming soon_
+- **Edge Extension**   : _Coming soon_ 
+
+**Note:** Use github release for installing extensions/addons for now.
 
 ## Comparison
 
