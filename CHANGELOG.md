@@ -5,6 +5,14 @@ All notable changes to Cookie Sentinel will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-04-29
+
+### Added
+- Netscape `cookies.txt` export — download cookies in the standard format used by curl, wget, and the cookies.txt browser extension
+- Export buttons in both DevTools panel and popup (JSON + TXT side by side)
+- `exportToNetscape()` utility with `#HttpOnly_` prefix, subdomain flag, and session/expiry handling
+- 9 new unit tests for cookies.txt export (67 total, 96.78% coverage)
+
 ## [1.0.1] - 2026-04-18
 
 ### Fixed
