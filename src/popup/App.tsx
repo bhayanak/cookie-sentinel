@@ -3,7 +3,7 @@ import type { StorageEntry, PrivacyScore } from '@shared/types';
 import { STORAGE_TYPE_LABELS, COOKIE_CLASS_COLORS, COOKIE_CLASS_LABELS } from '@shared/constants';
 import type { StorageType, CookieClass } from '@shared/types';
 import { calculatePrivacyScore } from '@background/privacy-scorer';
-import { exportToJSON } from '@shared/utils';
+import { exportToJSON, exportToNetscape } from '@shared/utils';
 
 function App() {
   const [entries, setEntries] = useState<StorageEntry[]>([]);
@@ -153,7 +153,23 @@ function App() {
           onClick={handleExport}
           className="flex-1 px-3 py-1.5 text-xs bg-monster-600 hover:bg-monster-500 rounded transition-colors"
         >
-          💾 Export
+          💾 JSON
+        </button>
+        <button
+          onClick={() => {
+            const txt = exportToNetscape(entries);
+            const blob = new Blob([txt], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cookies.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          disabled={entries.filter((e) => e.type === 'cookie').length === 0}
+          className="flex-1 px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-600 rounded disabled:opacity-50 transition-colors"
+        >
+          📄 TXT
         </button>
         <button
           onClick={handleClearAll}

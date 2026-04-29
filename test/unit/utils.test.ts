@@ -12,6 +12,7 @@ import {
   diffSnapshots,
   exportToJSON,
   parseImportJSON,
+  exportToNetscape,
 } from '../../src/shared/utils';
 import type { StorageSnapshot, StorageEntry } from '../../src/shared/types';
 
@@ -215,5 +216,121 @@ describe('exportToJSON / parseImportJSON', () => {
   it('returns null for invalid JSON', () => {
     expect(parseImportJSON('not json')).toBeNull();
     expect(parseImportJSON('{}')).toBeNull();
+  });
+});
+
+describe('exportToNetscape', () => {
+  function makeCookieEntry(
+    overrides: Partial<{
+      domain: string;
+      key: string;
+      value: string;
+      path: string;
+      secure: boolean;
+      httpOnly: boolean;
+      hostOnly: boolean;
+      expirationDate: number | undefined;
+      session: boolean;
+    }> = {},
+  ): StorageEntry {
+    return {
+      id: `cookie::${overrides.domain ?? '.example.com'}::${overrides.key ?? 'test'}`,
+      type: 'cookie',
+      domain: overrides.domain ?? '.example.com',
+      key: overrides.key ?? 'test',
+      value: overrides.value ?? 'abc',
+      metadata: {
+        path: overrides.path ?? '/',
+        secure: overrides.secure ?? false,
+        httpOnly: overrides.httpOnly ?? false,
+        sameSite: 'lax',
+        hostOnly: overrides.hostOnly ?? false,
+        session: overrides.session ?? true,
+        expirationDate: overrides.expirationDate,
+        size: 10,
+      },
+    };
+  }
+
+  it('generates Netscape header', () => {
+    const result = exportToNetscape([]);
+    expect(result).toContain('# Netscape HTTP Cookie File');
+    expect(result.endsWith('\n')).toBe(true);
+  });
+
+  it('exports a basic cookie with tab-separated fields', () => {
+    const result = exportToNetscape([makeCookieEntry()]);
+    const lines = result.trim().split('\n');
+    const dataLine = lines[lines.length - 1];
+    const fields = dataLine.split('\t');
+    expect(fields).toHaveLength(7);
+    expect(fields[0]).toBe('.example.com');
+    expect(fields[1]).toBe('TRUE'); // subdomain flag (domain starts with .)
+    expect(fields[2]).toBe('/');
+    expect(fields[3]).toBe('FALSE'); // not secure
+    expect(fields[4]).toBe('0'); // session cookie
+    expect(fields[5]).toBe('test');
+    expect(fields[6]).toBe('abc');
+  });
+
+  it('sets secure flag to TRUE', () => {
+    const result = exportToNetscape([makeCookieEntry({ secure: true })]);
+    const dataLine = result.trim().split('\n').pop()!;
+    expect(dataLine.split('\t')[3]).toBe('TRUE');
+  });
+
+  it('prefixes #HttpOnly_ for httpOnly cookies', () => {
+    const result = exportToNetscape([makeCookieEntry({ httpOnly: true })]);
+    const dataLine = result.trim().split('\n').pop()!;
+    expect(dataLine.split('\t')[0]).toBe('#HttpOnly_.example.com');
+  });
+
+  it('sets subdomain flag FALSE for hostOnly cookies', () => {
+    const result = exportToNetscape([makeCookieEntry({ domain: '.example.com', hostOnly: true })]);
+    const dataLine = result.trim().split('\n').pop()!;
+    expect(dataLine.split('\t')[1]).toBe('FALSE');
+  });
+
+  it('sets subdomain flag FALSE for domains without leading dot', () => {
+    const result = exportToNetscape([makeCookieEntry({ domain: 'example.com', hostOnly: false })]);
+    const dataLine = result.trim().split('\n').pop()!;
+    expect(dataLine.split('\t')[1]).toBe('FALSE');
+  });
+
+  it('outputs expirationDate as integer', () => {
+    const result = exportToNetscape([makeCookieEntry({ expirationDate: 1700000000.5 })]);
+    const dataLine = result.trim().split('\n').pop()!;
+    expect(dataLine.split('\t')[4]).toBe('1700000000');
+  });
+
+  it('skips non-cookie entries', () => {
+    const lsEntry: StorageEntry = {
+      id: 'localStorage::example.com::theme',
+      type: 'localStorage',
+      domain: 'example.com',
+      key: 'theme',
+      value: 'dark',
+      metadata: { size: 4, type: 'localStorage' },
+    };
+    const result = exportToNetscape([lsEntry, makeCookieEntry()]);
+    const dataLines = result
+      .trim()
+      .split('\n')
+      .filter((l) => !l.startsWith('#') && l.trim() !== '');
+    expect(dataLines).toHaveLength(1);
+  });
+
+  it('exports multiple cookies', () => {
+    const entries = [
+      makeCookieEntry({ key: 'a', value: '1' }),
+      makeCookieEntry({ key: 'b', value: '2' }),
+      makeCookieEntry({ key: 'c', value: '3' }),
+    ];
+    const result = exportToNetscape(entries);
+    const dataLines = result
+      .trim()
+      .split('\n')
+      .filter((l) => !l.startsWith('#') && l.trim() !== '');
+    expect(dataLines).toHaveLength(3);
   });
 });

@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useAppStore } from '@shared/store';
-import { exportToJSON, parseImportJSON } from '@shared/utils';
+import { exportToJSON, exportToNetscape, parseImportJSON } from '@shared/utils';
 
 function ExportView() {
   const { entries, currentDomain, setEntries } = useAppStore();
   const [importText, setImportText] = useState('');
   const [importError, setImportError] = useState<string | null>(null);
   const [exported, setExported] = useState(false);
+  const [exportedTxt, setExportedTxt] = useState(false);
+
+  const cookieCount = entries.filter((e) => e.type === 'cookie').length;
 
   function handleExport() {
     const json = exportToJSON(entries, currentDomain);
@@ -19,6 +22,19 @@ function ExportView() {
     URL.revokeObjectURL(url);
     setExported(true);
     setTimeout(() => setExported(false), 2000);
+  }
+
+  function handleExportNetscape() {
+    const txt = exportToNetscape(entries);
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cookies.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportedTxt(true);
+    setTimeout(() => setExportedTxt(false), 2000);
   }
 
   function handleImport() {
@@ -46,6 +62,13 @@ function ExportView() {
           className="px-4 py-2 text-xs bg-monster-600 hover:bg-monster-500 rounded disabled:opacity-50 transition-colors"
         >
           {exported ? '✅ Downloaded!' : `💾 Export ${entries.length} entries as JSON`}
+        </button>
+        <button
+          onClick={handleExportNetscape}
+          disabled={cookieCount === 0}
+          className="ml-2 px-4 py-2 text-xs bg-slate-700 hover:bg-slate-600 rounded disabled:opacity-50 transition-colors"
+        >
+          {exportedTxt ? '✅ Downloaded!' : `📄 Export ${cookieCount} cookies as cookies.txt`}
         </button>
       </section>
 
