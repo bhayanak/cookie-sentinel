@@ -56,7 +56,25 @@ export async function handleMessage(message: ExtensionMessage): Promise<Extensio
 // ─── Cookie operations ───────────────────────────────────
 
 async function getCookies(payload: { domain: string }): Promise<ExtensionResponse<StorageEntry[]>> {
+  // Fetch cookies for the exact domain
   const cookies = await chrome.cookies.getAll({ domain: payload.domain });
+
+  // Also fetch parent domain cookies (e.g. .sharepoint.com for hpe-my.sharepoint.com)
+  // These often contain critical auth cookies like rtFa, SIMI
+  const parts = payload.domain.replace(/^\./, '').split('.');
+  const seen = new Set(cookies.map((c) => `${c.domain}::${c.name}`));
+  if (parts.length > 2) {
+    const parentDomain = '.' + parts.slice(-2).join('.');
+    const parentCookies = await chrome.cookies.getAll({ domain: parentDomain });
+    for (const c of parentCookies) {
+      const key = `${c.domain}::${c.name}`;
+      if (!seen.has(key)) {
+        cookies.push(c);
+        seen.add(key);
+      }
+    }
+  }
+
   const entries: StorageEntry[] = cookies.map((c) => ({
     id: entryId('cookie', c.domain, c.name),
     type: 'cookie',
